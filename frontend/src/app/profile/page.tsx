@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/components/Navbar';
 
 const ProfilePage: React.FC = () => {
   const [profileData, setProfileData] = useState({
@@ -121,6 +122,8 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
+    <>
+    <Navbar />
     <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
       <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-80">
         <h1 className="text-2xl font-bold text-center mb-4">Profile</h1>
@@ -207,6 +210,7 @@ const ProfilePage: React.FC = () => {
           </form>
         ) : (
           <>
+            
             <div className="mb-4">
               <label className="block text-[var(--dracula-comment)] mb-2">First Name</label>
               <div className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black">
@@ -247,6 +251,7 @@ const ProfilePage: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
