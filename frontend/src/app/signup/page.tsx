@@ -1,5 +1,6 @@
 "use client"; // This directive tells Next.js that this component uses client-side features
 
+import Navbar from '@/components/Navbar';
 import React, { useState } from 'react';
 
 const SignupPage: React.FC = () => {
@@ -94,6 +95,8 @@ const SignupPage: React.FC = () => {
   };
 
   return (
+    <>
+    <Navbar />
     <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
       <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-96">
         <h1 className="text-2xl font-bold text-center mb-4">Sign Up</h1>
@@ -194,6 +197,7 @@ const SignupPage: React.FC = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 
