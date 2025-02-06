@@ -45,6 +45,9 @@ const Navbar: React.FC = () => {
               <Link href="/cart" passHref>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Cart</span>
               </Link>
+              <Link href="/sell" passHref>
+                <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Sell</span>
+              </Link>
               <Link href="/settings" passHref>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Settings</span>
               </Link>

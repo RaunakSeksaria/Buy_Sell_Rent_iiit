@@ -1,31 +1,28 @@
-// src/middleware/authMiddleware.ts
+import express from 'express';
+import authMiddleware from '../middleware/authMiddleware';
+import Item from '../models/Item';
 
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+const router = express.Router();
 
-interface AuthRequest extends Request {
-  userId?: string; // Extend the Request interface to include userId
-}
-
-const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): void => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-
-  if (!token) {
-    res.status(401).json({ error: 'No token, authorization denied' });
-    return; // Ensure the request-response cycle ends
-  }
-
+// Create a new item (protected route)
+router.post('/', authMiddleware, async (req, res) => {
   try {
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-    
-    // Attach userId to request object
-    req.userId = decoded.userId;
-    
-    next(); // Pass control to the next middleware or route handler
-  } catch (err) {
-    res.status(401).json({ error: 'Token is not valid' });
-  }
-};
+    const { itemName, description, price, category } = req.body;
+    const userId = (req as any).userId; // Access userId set by middleware
 
-export default authMiddleware;
+    const newItem = new Item({
+      userId,
+      itemName,
+      description,
+      price,
+      category,
+    });
+
+    await newItem.save();
+    res.status(201).json({ message: 'Item listed for sale successfully', item: newItem });
+  } catch (error) {
+    res.status(400).json({ error: 'Error listing item for sale' });
+  }
+});
+
+export default router;

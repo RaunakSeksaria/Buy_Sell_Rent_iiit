@@ -1,40 +1,23 @@
-// src/models/Item.ts
+import mongoose, { Document, Schema } from 'mongoose';
 
-import mongoose from 'mongoose';
+interface IItem extends Document {
+  userId: string;
+  itemName: string;
+  description: string;
+  price: number;
+  category: string;
+}
 
-// Define the item schema
-const itemSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  description: {
-    type: String,
-    trim: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
+const ItemSchema: Schema = new Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  itemName: { type: String, required: true, trim: true },
+  description: { type: String, required: true, trim: true },
+  price: { type: Number, required: true, min: 0 },
+  category: { type: String, required: true, trim: true },
 }, {
   timestamps: true,
 });
 
-// Create and export the Item model
-const Item = mongoose.model('Item', itemSchema);
+const Item = mongoose.model<IItem>('Item', ItemSchema);
+
 export default Item;
