@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
     <nav className="bg-[var(--dracula-current-line)] p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-[var(--dracula-foreground)] text-2xl font-bold">
-          MyApp
+          BSR@IIITH
         </div>
         <div className="space-x-4">
           {isLoggedIn ? (

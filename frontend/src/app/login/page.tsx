@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/components/Navbar';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -49,7 +50,7 @@ const LoginPage: React.FC = () => {
       // Redirect to profile page after 2 seconds
       setTimeout(() => {
         router.push('/profile');
-      }, 2000);
+      }, 1000);
 
       // Reset form fields (optional)
       setEmail('');
@@ -61,6 +62,8 @@ const LoginPage: React.FC = () => {
   };
 
   return (
+    <>
+    <Navbar />
     <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
       <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-80">
         <h1 className="text-2xl font-bold text-center mb-4">Login</h1>
@@ -104,6 +107,7 @@ const LoginPage: React.FC = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 
