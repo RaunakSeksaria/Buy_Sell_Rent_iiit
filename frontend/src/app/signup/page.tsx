@@ -31,10 +31,29 @@ const SignupPage: React.FC = () => {
       return;
     }
 
+    // Validation for phone number (integer-based with optional + at the start)
+    const phonePattern = /^\+?[0-9]+$/;
+    if (!phonePattern.test(formData.contactNumber)) {
+      setError('Please enter a valid contact number.');
+      return;
+    }
+
+    // Validation for age (non-negative integer)
+    const age = parseInt(formData.age, 10);
+    if (isNaN(age) || age < 0) {
+      setError('Please enter a valid non-negative age.');
+      return;
+    }
+
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long.');
       return;
     }
+
+    // Format name fields (first letter capital, others small)
+    const formatName = (name: string) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    formData.firstName = formatName(formData.firstName);
+    formData.lastName = formatName(formData.lastName);
 
     // Clear previous error
     setError('');
@@ -163,7 +182,6 @@ const SignupPage: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
-              placeholder="Enter your password"
               required
             />
           </div>

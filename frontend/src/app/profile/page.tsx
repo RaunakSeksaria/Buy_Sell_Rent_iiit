@@ -12,6 +12,7 @@ const ProfilePage: React.FC = () => {
     contactNumber: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
 
@@ -59,6 +60,39 @@ const ProfilePage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Example client-side validation for IIIT email
+    const iiitEmailPattern = /^[a-zA-Z0-9._%+-]+@(students\.|research\.)?iiit\.ac\.in$/;
+    if (!iiitEmailPattern.test(profileData.email)) {
+      setError('Please use your IIIT email address.');
+      return;
+    }
+
+    
+    // Validation for phone number (integer-based with optional + at the start)
+    const phonePattern = /^\+?[0-9]+$/;
+    if (!phonePattern.test(profileData.contactNumber)) {
+      setError('Please enter a valid contact number.');
+      return;
+    }
+
+
+    // Validation for age (non-negative integer)
+    const age = parseInt(profileData.age, 10);
+    if (isNaN(age) || age < 0) {
+      setError('Please enter a valid non-negative age.');
+      return;
+    }
+
+    // Format name fields (first letter capital, others small)
+    const formatName = (name: string) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    profileData.firstName = formatName(profileData.firstName);
+    profileData.lastName = formatName(profileData.lastName);
+
+
+    // Clear previous error
+    setError('');
+    setSuccess('');
+
     try {
       const token = localStorage.getItem('token'); // Get token from localStorage
       const response = await fetch('http://localhost:5000/api/users/editprofile', {
@@ -78,6 +112,7 @@ const ProfilePage: React.FC = () => {
 
       const data = await response.json();
       setProfileData(data);
+      setSuccess('Profile updated successfully!');
       setIsEditing(false);
     } catch (error) {
       setError('Failed to update profile. Please try again later.');
@@ -90,6 +125,7 @@ const ProfilePage: React.FC = () => {
       <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-80">
         <h1 className="text-2xl font-bold text-center mb-4">Profile</h1>
         {error && <div className="text-red-500 mb-4">{error}</div>}
+        {success && <div className="text-green-500 mb-4">{success}</div>}
         {isEditing ? (
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
