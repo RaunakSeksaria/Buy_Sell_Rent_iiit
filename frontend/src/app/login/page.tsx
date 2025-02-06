@@ -43,6 +43,9 @@ const LoginPage: React.FC = () => {
       console.log('Login successful:', data);
       setSuccess('Login successful!');
 
+      // Store the JWT token in localStorage
+      localStorage.setItem('token', data.token);
+
       // Redirect to profile page after 2 seconds
       setTimeout(() => {
         router.push('/profile');

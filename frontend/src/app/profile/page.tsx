@@ -18,10 +18,13 @@ const ProfilePage: React.FC = () => {
     // Fetch profile data from the backend
     const fetchProfileData = async () => {
       try {
+        const token = localStorage.getItem('token'); // Get token from localStorage
+        console.log(token)
         const response = await fetch('http://localhost:5000/api/users/profile', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Send token in Authorization header
           },
         });
 
