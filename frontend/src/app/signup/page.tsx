@@ -12,6 +12,7 @@ const SignupPage: React.FC = () => {
     password: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -20,10 +21,10 @@ const SignupPage: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Example client-side validation for IIIT email : students, research, and just iiit are the only domains allowed so far
+    // Example client-side validation for IIIT email
     const iiitEmailPattern = /^[a-zA-Z0-9._%+-]+@(students\.|research\.)?iiit\.ac\.in$/;
     if (!iiitEmailPattern.test(formData.email)) {
       setError('Please use your IIIT email address.');
@@ -37,19 +38,40 @@ const SignupPage: React.FC = () => {
 
     // Clear previous error
     setError('');
+    setSuccess('');
 
-    // Placeholder for form submission logic
-    console.log('Signing up with:', formData);
+    try {
+      const response = await fetch('http://localhost:5000/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-    // Reset form fields (optional)
-    setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      age: '',
-      contactNumber: '',
-      password: '',
-    });
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message || 'Something went wrong');
+        return;
+      }
+
+      const data = await response.json();
+      setSuccess('Signup successful!');
+      console.log('Signup successful:', data);
+
+      // Reset form fields (optional)
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        age: '',
+        contactNumber: '',
+        password: '',
+      });
+    } catch (error) {
+      setError('Failed to sign up. Please try again later.');
+      console.error('Error signing up:', error);
+    }
   };
 
   return (
@@ -57,6 +79,7 @@ const SignupPage: React.FC = () => {
       <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-96">
         <h1 className="text-2xl font-bold text-center mb-4">Sign Up</h1>
         {error && <div className="text-red-500 mb-4">{error}</div>}
+        {success && <div className="text-green-500 mb-4">{success}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="firstName">

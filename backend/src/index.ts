@@ -16,7 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
-app.use("/api/items", itemRoutes);
+// app.use("/api/items", itemRoutes);
 
 // Error handling middleware
 app.use((err: any, req: any, res: any, next: any) => {

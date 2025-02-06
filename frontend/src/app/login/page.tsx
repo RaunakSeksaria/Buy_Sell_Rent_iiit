@@ -7,11 +7,11 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Example client-side validation for IIIT email
-    const iiitEmailPattern = /^[a-zA-Z0-9._%+-]+@iiit\.ac\.in$/;
+    const iiitEmailPattern = /^[a-zA-Z0-9._%+-]+@(students\.|research\.)?iiit\.ac\.in$/;
+
     if (!iiitEmailPattern.test(email)) {
       setError('Please use your IIIT email address.');
       return;
@@ -20,12 +20,31 @@ const LoginPage: React.FC = () => {
     // Clear previous error
     setError('');
 
-    // Placeholder for form submission logic
-    console.log('Logging in with:', { email, password });
+    try {
+      const response = await fetch('http://localhost:5000/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Reset form fields (optional)
-    setEmail('');
-    setPassword('');
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message || 'Something went wrong');
+        return;
+      }
+
+      const data = await response.json();
+      console.log('Login successful:', data);
+
+      // Reset form fields (optional)
+      setEmail('');
+      setPassword('');
+    } catch (error) {
+      setError('Failed to log in. Please try again later.');
+      console.error('Error logging in:', error);
+    }
   };
 
   return (
