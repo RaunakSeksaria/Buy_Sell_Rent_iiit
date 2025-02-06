@@ -25,16 +25,10 @@ const Navbar: React.FC = () => {
           MyApp
         </div>
         <div className="space-x-4">
-          <Link href="/" passHref>
-            <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Home</span>
-          </Link>
           {isLoggedIn ? (
             <>
               <Link href="/profile" passHref>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Profile</span>
-              </Link>
-              <Link href="/dashboard" passHref>
-                <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Dashboard</span>
               </Link>
               <Link href="/search" passHref>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Search</span>
@@ -48,15 +42,15 @@ const Navbar: React.FC = () => {
               <Link href="/sell" passHref>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Sell</span>
               </Link>
-              <Link href="/settings" passHref>
-                <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Settings</span>
-              </Link>
               <button onClick={handleLogout} className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">
                 Logout
               </button>
             </>
           ) : (
             <>
+              <Link href="/" passHref>
+                <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Home</span>
+              </Link>
               <Link href="/signup" passHref>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Sign Up</span>
               </Link>
