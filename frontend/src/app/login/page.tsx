@@ -1,11 +1,14 @@
 "use client"; // This directive tells Next.js that this component uses client-side features
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +22,7 @@ const LoginPage: React.FC = () => {
 
     // Clear previous error
     setError('');
+    setSuccess('');
 
     try {
       const response = await fetch('http://localhost:5000/api/users/login', {
@@ -37,6 +41,12 @@ const LoginPage: React.FC = () => {
 
       const data = await response.json();
       console.log('Login successful:', data);
+      setSuccess('Login successful!');
+
+      // Redirect to profile page after 2 seconds
+      setTimeout(() => {
+        router.push('/profile');
+      }, 2000);
 
       // Reset form fields (optional)
       setEmail('');
@@ -52,6 +62,7 @@ const LoginPage: React.FC = () => {
       <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-80">
         <h1 className="text-2xl font-bold text-center mb-4">Login</h1>
         {error && <div className="text-red-500 mb-4">{error}</div>}
+        {success && <div className="text-green-500 mb-4">{success}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="email">
