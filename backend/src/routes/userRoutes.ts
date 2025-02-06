@@ -80,4 +80,89 @@ router.put('/editprofile', authMiddleware, async (req, res) => {
   }
 });
 
+// Add item to cart (protected route)
+router.post('/cart', authMiddleware, async (req, res) => {
+  try {
+    const userId = (req as any).userId; // Access userId set by middleware
+    const { itemId, quantity } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const itemIndex = user.itemsInCart.findIndex((cartItem) => cartItem.item && cartItem.item.toString() === itemId);
+    if (itemIndex > -1) {
+      // Item already in cart, update quantity
+      user.itemsInCart[itemIndex].quantity += quantity;
+    } else {
+      // Add new item to cart
+      user.itemsInCart.push({ item: itemId, quantity });
+    }
+
+    await user.save();
+    res.status(200).json({ message: 'Item added to cart' });
+  } catch (error) {
+    res.status(400).json({ error: 'Error adding item to cart' });
+  }
+});
+
+// Get cart items (protected route)
+router.get('/cart', authMiddleware, async (req, res) => {
+  try {
+    const userId = (req as any).userId; // Access userId set by middleware
+    const user = await User.findById(userId).populate('itemsInCart.item');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.status(200).json({ itemsInCart: user.itemsInCart });
+  } catch (error) {
+    res.status(400).json({ error: 'Error fetching cart items' });
+  }
+});
+
+// // Update item quantity in cart (protected route)
+// router.put('/cart', authMiddleware, async (req, res) => {
+//   try {
+//     const userId = (req as any).userId; // Access userId set by middleware
+//     const { itemId, quantity } = req.body;
+
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+
+//     const itemIndex = user.itemsInCart.findIndex((cartItem) => cartItem.item && cartItem.item.toString() === itemId);
+//     if (itemIndex > -1) {
+//       // Update item quantity
+//       user.itemsInCart[itemIndex].quantity = quantity;
+//       await user.save();
+//       res.status(200).json({ message: 'Item quantity updated' });
+//     } else {
+//       res.status(404).json({ error: 'Item not found in cart' });
+//     }
+//   } catch (error) {
+//     res.status(400).json({ error: 'Error updating item quantity in cart' });
+//   }
+// });
+
+// Remove item from cart (protected route)
+// router.delete('/cart', authMiddleware, async (req, res) => {
+//   try {
+//     const userId = (req as any).userId; // Access userId set by middleware
+//     const { itemId } = req.body;
+
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+
+//     user.itemsInCart.set(user.itemsInCart.filter((cartItem) => cartItem.item && cartItem.item.toString() !== itemId));
+//     await user.save();
+//     res.status(200).json({ message: 'Item removed from cart' });
+//   } catch (error) {
+//     res.status(400).json({ error: 'Error removing item from cart' });
+//   }
+// });
+
 export default router;

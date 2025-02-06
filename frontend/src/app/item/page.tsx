@@ -1,4 +1,3 @@
-// src/app/item/page.tsx
 "use client";
 
 import { useSearchParams } from 'next/navigation';
@@ -23,6 +22,31 @@ const fetchItemData = async (id: string) => {
   } catch (error) {
     console.error('Fetch error:', error);
     throw error;
+  }
+};
+
+const addToCart = async (itemId: string, quantity: number) => {
+  try {
+    const token = localStorage.getItem('token'); // Get token from localStorage
+    const res = await fetch('http://localhost:5000/api/users/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // Send token in Authorization header
+      },
+      body: JSON.stringify({ itemId, quantity }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to add item to cart');
+    }
+
+    const data = await res.json();
+    console.log('Item added to cart successfully:', data);
+    alert('Item added to cart successfully');
+  } catch (error) {
+    console.error('Error adding item to cart:', error);
+    alert('Error adding item to cart');
   }
 };
 
@@ -83,9 +107,20 @@ const ItemPage: React.FC = () => {
           <p>{item.item.description}</p>
           <p className="text-sm text-[var(--dracula-comment)]">Rs.{item.item.price}</p>
           <p className="text-sm text-[var(--dracula-comment)]">Category: {item.item.category}</p>
-          <button onClick={() => window.history.back()} className="mt-4 py-2 px-4 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors">
-            Back
-          </button>
+          <div className="flex space-x-2 mt-4">
+            <button
+              onClick={() => addToCart(item.item._id, 1)}
+              className="py-2 px-4 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={() => window.history.back()}
+              className="py-2 px-4 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
+            >
+              Back
+            </button>
+          </div>
         </div>
       </div>
     </>

@@ -11,6 +11,15 @@ interface SearchFilters {
   maxPrice: string;
 }
 
+const categories = [
+  'Consumables',
+  'Electronics',
+  'Accessory',
+  'Clothes',
+  'Stationery',
+  'Other'
+];
+
 const SearchPage: React.FC = () => {
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
@@ -81,13 +90,19 @@ const SearchPage: React.FC = () => {
               <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="category">
                 Category
               </label>
-              <input
-                type="text"
+              <select
                 id="category"
                 value={filters.category}
                 onChange={(e) => setFilters({...filters, category: e.target.value})}
                 className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
-              />
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
