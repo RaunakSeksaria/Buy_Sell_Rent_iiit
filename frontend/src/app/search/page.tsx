@@ -134,7 +134,7 @@ const SearchPage: React.FC = () => {
                       <div className="bg-[var(--dracula-selection)] p-2 rounded cursor-pointer">
                         <h2 className="text-lg font-bold">{item.itemName}</h2>
                         <p>{item.description}</p>
-                        <p className="text-sm text-[var(--dracula-comment)]">${item.price}</p>
+                        <p className="text-sm text-[var(--dracula-comment)]">Rs.{item.price}</p>
                         <p className="text-sm text-[var(--dracula-comment)]">Category: {item.category}</p>
                       </div>
                     </Link>

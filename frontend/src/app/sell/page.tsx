@@ -3,17 +3,27 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 
+const categories = [
+  'Consumables',
+  'Electronics',
+  'Accessory',
+  'Clothes',
+  'Stationery',
+  'Other'
+];
+
 const SellPage: React.FC = () => {
   const [formData, setFormData] = useState({
     itemName: '',
     description: '',
     price: '',
     category: '',
+    otherCategory: ''
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -35,7 +45,10 @@ const SellPage: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`, // Send token in Authorization header
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          category: formData.category === 'Other' ? formData.otherCategory : formData.category
+        }),
       });
 
       if (!response.ok) {
@@ -51,6 +64,7 @@ const SellPage: React.FC = () => {
         description: '',
         price: '',
         category: '',
+        otherCategory: ''
       });
     } catch (error) {
       setError('Failed to list item for sale. Please try again later.');
@@ -96,7 +110,7 @@ const SellPage: React.FC = () => {
             </div>
             <div className="mb-4">
               <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="price">
-                Price
+                Price (Rs)
               </label>
               <input
                 type="number"
@@ -112,16 +126,38 @@ const SellPage: React.FC = () => {
               <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="category">
                 Category
               </label>
-              <input
-                type="text"
+              <select
                 id="category"
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
                 className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
                 required
-              />
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </div>
+            {formData.category === 'Other' && (
+              <div className="mb-4">
+                <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="otherCategory">
+                  Other Category
+                </label>
+                <input
+                  type="text"
+                  id="otherCategory"
+                  name="otherCategory"
+                  value={formData.otherCategory}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
+                  required
+                />
+              </div>
+            )}
             <button
               type="submit"
               className="w-full py-2 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
