@@ -53,13 +53,31 @@ router.post('/login', async (req, res) => {
 
 // Get user profile (protected route)
 router.get('/profile', authMiddleware, async (req, res) => {
-    try {
-      const userId = (req as any).userId; // Access userId set by middleware
-      const user = await User.findById(userId).select('-password');
-      res.json(user);
-    } catch (error) {
-      res.status(400).json({ error: 'Error fetching user profile' });
-    }
-  });
-  
-  export default router;
+  try {
+    const userId = (req as any).userId; // Access userId set by middleware
+    const user = await User.findById(userId).select('-password');
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ error: 'Error fetching user profile' });
+  }
+});
+
+// Edit user profile (protected route)
+router.put('/editprofile', authMiddleware, async (req, res) => {
+  try {
+    const userId = (req as any).userId; // Access userId set by middleware
+    const { firstName, lastName, email, age, contactNumber } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { firstName, lastName, email, age, contactNumber },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(400).json({ error: 'Error updating user profile' });
+  }
+});
+
+export default router;
