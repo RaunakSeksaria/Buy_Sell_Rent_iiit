@@ -208,8 +208,13 @@ router.post('/regenerate-otp', authMiddleware, async (req, res) => {
     }
 
     // Generate new OTP
-    const newTransactionId = uuidv4();
-    const newHashedOTP = await bcrypt.hash(newTransactionId, 10);
+    const generateOTP = (): string => {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    };
+
+    const unhashedotp = generateOTP();
+    // const newTransactionId = uuidv4();
+    const newHashedOTP = await bcrypt.hash(unhashedotp, 10);
 
     // Update order with new OTP
     order.hashedOTP = newHashedOTP;
@@ -217,7 +222,7 @@ router.post('/regenerate-otp', authMiddleware, async (req, res) => {
 
     res.json({ 
       message: 'OTP regenerated successfully',
-      otp: newTransactionId  // Send unhashed OTP
+      otp: unhashedotp  // Send unhashed OTP
     });
   } catch (error) {
     console.error('OTP regeneration error:', error);

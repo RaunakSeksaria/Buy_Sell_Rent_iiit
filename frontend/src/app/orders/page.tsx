@@ -140,21 +140,55 @@ const OrdersPage: React.FC = () => {
         <div>
           <h3 className="font-bold">Items:</h3>
           <ul>
-            {order.items.map((item: any, index: number) => {
-              console.log('Item:', item);
-              console.log('Item Name:', item.item?.itemName);
-              return (
-                <li key={`${order._id}-${item.item?._id || index}`}>
-                  {item.item?.itemName || 'Unknown Item'} - Quantity: {item.quantity}
-                </li>
-              );
-            })}
+            {order.items.map((item: any, index: number) => (
+              <li key={`${order._id}-${item.item?._id || index}`}>
+                {item.item?.itemName || 'Unknown Item'} - Quantity: {item.quantity}
+              </li>
+            ))}
           </ul>
         </div>
+        
+        {/* Add OTP controls for pending orders */}
+        {order.status === 'pending' && (
+          <div className="mt-4 space-y-2">
+            {/* Show OTP input and verify button for sellers */}
+            {order.seller._id === localStorage.getItem('userId') && (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={otpInputs[order._id] || ''}
+                  onChange={(e) => setOtpInputs(prev => ({
+                    ...prev,
+                    [order._id]: e.target.value
+                  }))}
+                  placeholder="Enter OTP"
+                  className="px-2 py-1 rounded text-black"
+                />
+                <button
+                  onClick={() => handleVerifyOTP(order._id)}
+                  className="bg-[var(--dracula-green)] text-white px-4 py-1 rounded"
+                >
+                  Verify OTP
+                </button>
+              </div>
+            )}
+            
+            {/* Show regenerate OTP button for buyers */}
+            {(
+              <button
+                onClick={() => handleRegenerateOTP(order._id)}
+                disabled={regenerating[order._id]}
+                className="bg-[var(--dracula-purple)] text-white px-4 py-1 rounded"
+              >
+                {regenerating[order._id] ? 'Regenerating...' : 'Regenerate OTP'}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     ));
   };
-
+  
   if (loading) {
     return <div>Loading...</div>;
   }
