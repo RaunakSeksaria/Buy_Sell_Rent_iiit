@@ -94,8 +94,8 @@ const ItemPage: React.FC = () => {
     return <div>Item not found</div>;
   }
 
-  console.log("Item log");
-  console.log(item.item.itemName);
+  // console.log("Item log");
+  // console.log(item.item.itemName);
   return (
     <>
       <Head>
@@ -108,6 +108,7 @@ const ItemPage: React.FC = () => {
           <p>{item.item.description}</p>
           <p className="text-sm text-[var(--dracula-comment)]">Rs.{item.item.price}</p>
           <p className="text-sm text-[var(--dracula-comment)]">Category: {item.item.category}</p>
+          <p className="text-sm text-[var(--dracula-comment)]">Seller: {item.item.userId.firstName} {item.item.userId.lastName}</p>
           <div className="flex space-x-2 mt-4">
             <button
               onClick={() => addToCart(item.item._id, 1)}

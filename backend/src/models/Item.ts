@@ -1,7 +1,15 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+interface IUser {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  // Add other fields as needed
+}
+
 interface IItem extends Document {
-  userId: string;
+  userId: IUser; // Change userId to IUser
   itemName: string;
   description: string;
   price: number;

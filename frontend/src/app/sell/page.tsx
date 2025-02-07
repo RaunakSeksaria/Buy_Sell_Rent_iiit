@@ -19,7 +19,7 @@ const SellPage: React.FC = () => {
     description: '',
     price: '',
     category: '',
-    otherCategory: ''
+    quantity: '' // Add quantity field
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -48,7 +48,7 @@ const SellPage: React.FC = () => {
         },
         body: JSON.stringify({
           ...formData,
-          category: formData.category === 'Other' ? formData.otherCategory : formData.category
+          quantity: Number(formData.quantity) // Ensure quantity is a number
         }),
       });
 
@@ -65,7 +65,7 @@ const SellPage: React.FC = () => {
         description: '',
         price: '',
         category: '',
-        otherCategory: ''
+        quantity: '' // Reset quantity field
       });
     } catch (error) {
       setError('Failed to list item for sale. Please try again later.');
@@ -124,6 +124,20 @@ const SellPage: React.FC = () => {
               />
             </div>
             <div className="mb-4">
+              <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="quantity">
+                Quantity
+              </label>
+              <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
+                required
+              />
+            </div>
+            <div className="mb-4">
               <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="category">
                 Category
               </label>
@@ -143,22 +157,6 @@ const SellPage: React.FC = () => {
                 ))}
               </select>
             </div>
-            {formData.category === 'Other' && (
-              <div className="mb-4">
-                <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="otherCategory">
-                  Other Category
-                </label>
-                <input
-                  type="text"
-                  id="otherCategory"
-                  name="otherCategory"
-                  value={formData.otherCategory}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
-                  required
-                />
-              </div>
-            )}
             <button
               type="submit"
               className="w-full py-2 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"

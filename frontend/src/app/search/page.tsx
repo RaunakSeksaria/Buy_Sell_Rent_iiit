@@ -7,9 +7,11 @@ import withAuth from '@/components/withAuth';
 
 interface SearchFilters {
   query: string;
-  category: string;
+  categories: string[];
   minPrice: string;
   maxPrice: string;
+  minQuantity: string;
+  maxQuantity: string;
 }
 
 const categories = [
@@ -24,9 +26,11 @@ const categories = [
 const SearchPage: React.FC = () => {
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
-    category: '',
+    categories: [],
     minPrice: '',
-    maxPrice: ''
+    maxPrice: '',
+    minQuantity: '',
+    maxQuantity: ''
   });
   const [results, setResults] = useState<any[]>([]);
 
@@ -59,12 +63,29 @@ const SearchPage: React.FC = () => {
     
     const params = new URLSearchParams();
     if (filters.query) params.append('q', filters.query);
-    if (filters.category) params.append('category', filters.category);
-    if (filters.minPrice) params.append('minPrice', filters.minPrice);
-    if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+    if (filters.categories.length > 0) {
+      filters.categories.forEach(category => params.append('categories', category));
+    }
+    if (filters.minPrice && !isNaN(Number(filters.minPrice)) && Number(filters.minPrice) >= 0) {
+      params.append('minPrice', filters.minPrice);
+    }
+    if (filters.maxPrice && !isNaN(Number(filters.maxPrice)) && Number(filters.maxPrice) >= 0) {
+      params.append('maxPrice', filters.maxPrice);
+    }
+    if (filters.minQuantity && !isNaN(Number(filters.minQuantity)) && Number(filters.minQuantity) >= 0) {
+      params.append('minQuantity', filters.minQuantity);
+    }
+    if (filters.maxQuantity && !isNaN(Number(filters.maxQuantity)) && Number(filters.maxQuantity) >= 0) {
+      params.append('maxQuantity', filters.maxQuantity);
+    }
     
     const searchParams = params.toString() ? `?${params.toString()}` : '';
     fetchItems(searchParams);
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategories = Array.from(e.target.selectedOptions, option => option.value);
+    setFilters({ ...filters, categories: selectedCategories });
   };
 
   return (
@@ -88,16 +109,16 @@ const SearchPage: React.FC = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="category">
-                Category
+              <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="categories">
+                Categories
               </label>
               <select
-                id="category"
-                value={filters.category}
-                onChange={(e) => setFilters({...filters, category: e.target.value})}
+                id="categories"
+                multiple
+                value={filters.categories}
+                onChange={handleCategoryChange}
                 className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
               >
-                <option value="">Select a category</option>
                 {categories.map((category) => (
                   <option key={category} value={category}>
                     {category}
@@ -133,6 +154,33 @@ const SearchPage: React.FC = () => {
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="minQuantity">
+                  Min Quantity
+                </label>
+                <input
+                  type="number"
+                  id="minQuantity"
+                  value={filters.minQuantity}
+                  onChange={(e) => setFilters({...filters, minQuantity: e.target.value})}
+                  className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
+                />
+              </div>
+              <div>
+                <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="maxQuantity">
+                  Max Quantity
+                </label>
+                <input
+                  type="number"
+                  id="maxQuantity"
+                  value={filters.maxQuantity}
+                  onChange={(e) => setFilters({...filters, maxQuantity: e.target.value})}
+                  className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
+                />
+              </div>
+            </div>
+
             <button
               type="submit"
               className="w-full py-2 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
@@ -152,6 +200,8 @@ const SearchPage: React.FC = () => {
                         <p>{item.description}</p>
                         <p className="text-sm text-[var(--dracula-comment)]">Rs.{item.price}</p>
                         <p className="text-sm text-[var(--dracula-comment)]">Category: {item.category}</p>
+                        <p className="text-sm text-[var(--dracula-comment)]">Quantity: {item.quantity}</p>
+                        <p className="text-sm text-[var(--dracula-comment)]">Seller: {item.userId.firstName} {item.userId.lastName}</p>
                       </div>
                     </Link>
                   </li>
