@@ -42,6 +42,9 @@ const Navbar: React.FC = () => {
               <Link href="/sell" passHref legacyBehavior>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Sell</span>
               </Link>
+              <Link href="/deliver_items" passHref legacyBehavior>
+                <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Deliver Items</span>
+              </Link>
               <button onClick={handleLogout} className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">
                 Logout
               </button>
