@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import userRoutes from './routes/userRoutes';
 import orderRoutes from './routes/orderRoutes';
 import jwt from 'jsonwebtoken';
+import chatbotRoutes from './routes/chatbotRoutes';
 
 declare module 'express-session' {
   interface SessionData {
@@ -94,7 +95,7 @@ app.use((err: any, req: any, res: any, next: any) => {
 app.use('/api/users', userRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/orders', orderRoutes);
-
+app.use('/api/chat', chatbotRoutes);  // Fixed missing forward slash
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
