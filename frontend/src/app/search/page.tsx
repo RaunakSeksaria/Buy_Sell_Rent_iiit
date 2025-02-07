@@ -92,8 +92,8 @@ const SearchPage: React.FC = () => {
     <>
       <Navbar />
       <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
-        <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-96">
-          <h1 className="text-2xl font-bold text-center mb-4">Search Items</h1>
+        {/* <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-full max-w-5xl"> */}
+          {/* <h1 className="text-2xl font-bold text-center mb-4">Search Items</h1> */}
           <form onSubmit={handleSearch}>
             <div className="mb-4">
               <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="query">
@@ -211,7 +211,7 @@ const SearchPage: React.FC = () => {
               <p className="text-[var(--dracula-comment)]">No results found</p>
             )}
           </div>
-        </div>
+        {/* </div> */}
       </div>
     </>
   );
