@@ -33,7 +33,7 @@ let CASAuthentication = require("cas-authentication");
 import User from './models/User';
 
 app.use(session({
-    secret: '123',
+    secret: process.env.SECRET_CAS!,
     resave: false,
     saveUninitialized: true,
 }));

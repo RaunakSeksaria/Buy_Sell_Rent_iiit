@@ -105,7 +105,7 @@ const LoginPage: React.FC = () => {
           {/* Add CAS Login Button */}
           <button
             onClick={handleCASLogin}
-            className="w-full py-2 mb-4 bg-[var(--dracula-cyan)] text-white rounded hover:bg-[var(--dracula-blue)] transition-colors"
+            className="w-full py-2 mb-4 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-blue)] transition-colors"
           >
             Login with IIIT CAS
           </button>
