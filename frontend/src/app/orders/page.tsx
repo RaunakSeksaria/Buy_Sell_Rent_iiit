@@ -224,8 +224,8 @@ const OrdersPage: React.FC = () => {
             </button>
           </div>
           {activeTab === 'pending' && renderOrders((order) => order.status === 'pending')}
-          {activeTab === 'bought' && renderOrders((order) => order.status === 'completed' && order.buyer._id === localStorage.getItem('userId'))}
-          {activeTab === 'sold' && renderOrders((order) => order.status === 'completed' && order.seller._id === localStorage.getItem('userId'))}
+          {activeTab === 'bought' && renderOrders((order) => order.status === 'completed')}
+          {activeTab === 'sold' && renderOrders((order) => order.status === 'completed')}
         </div>
       </div>
     </>
