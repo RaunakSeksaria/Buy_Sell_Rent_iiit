@@ -115,6 +115,10 @@ const CartPage: React.FC = () => {
       });
   }, []);
 
+  const calculateTotalCost = () => {
+    return cartItems.reduce((total, cartItem) => total + cartItem.item.price * cartItem.quantity, 0);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -130,32 +134,40 @@ const CartPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-center mb-4">Your Cart</h1>
           {error && <div className="text-red-500 text-center mb-4">{error}</div>}
           {cartItems.length > 0 ? (
-            <ul>
-              {cartItems.map((cartItem) => (
-                <li key={cartItem.item._id} className="mb-4">
-                  <div className="bg-[var(--dracula-selection)] p-4 rounded">
-                    <h2 className="text-lg font-bold">{cartItem.item.itemName}</h2>
-                    <p>{cartItem.item.description}</p>
-                    <p className="text-sm text-[var(--dracula-comment)]">Rs.{cartItem.item.price}</p>
-                    <p className="text-sm text-[var(--dracula-comment)]">Category: {cartItem.item.category}</p>
-                    <div className="flex items-center mt-2">
-                      <input
-                        type="number"
-                        value={cartItem.quantity}
-                        onChange={(e) => updateCartItemQuantity(cartItem.item._id, parseInt(e.target.value), setCartItems, setError)}
-                        className="w-16 px-2 py-1 rounded bg-[var(--dracula-foreground)] text-black mr-2"
-                      />
-                      <button
-                        onClick={() => removeCartItem(cartItem.item._id, setCartItems, setError)}
-                        className="py-1 px-2 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
-                      >
-                        Remove
-                      </button>
+            <>
+              <ul>
+                {cartItems.map((cartItem) => (
+                  <li key={cartItem.item._id} className="mb-4">
+                    <div className="bg-[var(--dracula-selection)] p-4 rounded flex justify-between items-center">
+                      <div>
+                        <h2 className="text-lg font-bold">{cartItem.item.itemName}</h2>
+                        <p className="text-sm text-[var(--dracula-comment)]">Rs.{cartItem.item.price} per unit</p>
+                        <div className="flex items-center mt-2">
+                          <input
+                            type="number"
+                            value={cartItem.quantity}
+                            onChange={(e) => updateCartItemQuantity(cartItem.item._id, parseInt(e.target.value), setCartItems, setError)}
+                            className="w-16 px-2 py-1 rounded bg-[var(--dracula-foreground)] text-black mr-2"
+                          />
+                          <button
+                            onClick={() => removeCartItem(cartItem.item._id, setCartItems, setError)}
+                            className="py-1 px-2 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold">Rs.{cartItem.item.price * cartItem.quantity}</p>
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+              <div className="text-center mt-4">
+                <p className="text-lg font-bold">Total Cost: Rs.{calculateTotalCost()}</p>
+              </div>
+            </>
           ) : (
             <p className="text-center text-[var(--dracula-comment)]">Your cart is empty</p>
           )}

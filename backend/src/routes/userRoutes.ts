@@ -182,4 +182,5 @@ router.delete('/cart', authMiddleware, async (req, res) => {
     res.status(400).json({ error: 'Error removing item from cart' });
   }
 });
+
 export default router;
