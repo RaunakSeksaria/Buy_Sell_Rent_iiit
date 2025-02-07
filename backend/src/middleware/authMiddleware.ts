@@ -17,7 +17,9 @@ const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): vo
 
   try {
     // Verify token
+    console.log("token",token);
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    console.log("decoded",decoded);
     
     // Attach userId to request object
     req.userId = decoded.userId;

@@ -15,6 +15,7 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
+    window.location.href = 'http://localhost:5000/api/cas-logout';
     router.push('/login');
   };
 

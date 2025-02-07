@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import withAuth from '@/components/withAuth';
 
 const ProfilePage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
@@ -23,15 +24,15 @@ const ProfilePage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch profile data from the backend
     const fetchProfileData = async () => {
+      setLoading(true);
       try {
-        const token = localStorage.getItem('token'); // Get token from localStorage
+        const token = localStorage.getItem('token');
         const response = await fetch('http://localhost:5000/api/users/profile', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Send token in Authorization header
+            'Authorization': `Bearer ${token}`,
           },
         });
 
@@ -42,10 +43,13 @@ const ProfilePage: React.FC = () => {
         }
 
         const data = await response.json();
+        console.log(response);
         setProfileData(data);
       } catch (error) {
         setError('Failed to fetch profile data. Please try again later.');
         console.error('Error fetching profile data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 

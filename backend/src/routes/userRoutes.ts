@@ -55,7 +55,10 @@ router.post('/login', async (req, res) => {
 // Get user profile (protected route)
 router.get('/profile', authMiddleware, async (req, res) => {
   try {
+
     const userId = (req as any).userId; // Access userId set by middleware
+    console.log("userId");	
+    console.log(userId);
     const user = await User.findById(userId).select('-password');
     res.json(user);
   } catch (error) {
