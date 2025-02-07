@@ -58,6 +58,7 @@ const ItemPage: React.FC = () => {
   const [item, setItem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState<number>(1); // State for quantity
 
   useEffect(() => {
     if (id) {
@@ -94,8 +95,6 @@ const ItemPage: React.FC = () => {
     return <div>Item not found</div>;
   }
 
-  // console.log("Item log");
-  // console.log(item.item.itemName);
   return (
     <>
       <Head>
@@ -110,8 +109,15 @@ const ItemPage: React.FC = () => {
           <p className="text-sm text-[var(--dracula-comment)]">Category: {item.item.category}</p>
           <p className="text-sm text-[var(--dracula-comment)]">Seller: {item.item.userId.firstName} {item.item.userId.lastName}</p>
           <div className="flex space-x-2 mt-4">
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(parseInt(e.target.value))}
+              className="w-16 px-2 py-1 rounded bg-[var(--dracula-foreground)] text-black"
+              min="1"
+            />
             <button
-              onClick={() => addToCart(item.item._id, 1)}
+              onClick={() => addToCart(item.item._id, quantity)}
               className="py-2 px-4 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
             >
               Add to Cart

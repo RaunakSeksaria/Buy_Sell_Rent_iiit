@@ -92,9 +92,29 @@ router.post('/cart', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const item = await Item.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    // Check if the seller is different from the current user
+    // console.log(item?.userId==userId);
+    // console.log(item?.userId===userId);
+
+    if (item?.userId == userId) {
+      return res.status(400).json({ error: 'Cannot add your own item to the cart' });
+    }
+
+    // Check if the requested quantity is less than or equal to the available quantity
+    if (quantity > item.quantity) {
+      return res.status(400).json({ error: 'Requested quantity exceeds available quantity' });
+    }
+    
     const itemIndex = user.itemsInCart.findIndex((cartItem) => cartItem.item && cartItem.item.toString() === itemId);
     if (itemIndex > -1) {
       // Item already in cart, update quantity
+      if (quantity +user.itemsInCart[itemIndex].quantity > item.quantity) {
+        return res.status(400).json({ error: 'Requested quantity exceeds available quantity' });
+      }
       user.itemsInCart[itemIndex].quantity += quantity;
     } else {
       // Add new item to cart
