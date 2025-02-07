@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
+import withAuth from '@/components/withAuth';
 
 const categories = [
   'Consumables',
@@ -171,4 +172,4 @@ const SellPage: React.FC = () => {
   );
 };
 
-export default SellPage;
+export default withAuth(SellPage);

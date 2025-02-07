@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import withAuth from '@/components/withAuth';
 
 const ProfilePage: React.FC = () => {
   const [profileData, setProfileData] = useState({
@@ -306,4 +307,4 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-export default ProfilePage;
+export default withAuth(ProfilePage);

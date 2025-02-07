@@ -6,6 +6,7 @@ interface IItem extends Document {
   description: string;
   price: number;
   category: string;
+  quantity: number; // Add quantity field
 }
 
 const ItemSchema: Schema = new Schema({
@@ -14,6 +15,7 @@ const ItemSchema: Schema = new Schema({
   description: { type: String, required: true, trim: true },
   price: { type: Number, required: true, min: 0 },
   category: { type: String, required: true, trim: true },
+  quantity: { type: Number, required: true, min: 1 }, // Add quantity field to schema
 }, {
   timestamps: true,
 });

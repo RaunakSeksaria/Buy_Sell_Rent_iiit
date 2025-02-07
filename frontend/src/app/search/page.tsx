@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
+import withAuth from '@/components/withAuth';
 
 interface SearchFilters {
   query: string;
@@ -166,4 +167,4 @@ const SearchPage: React.FC = () => {
   );
 };
 
-export default SearchPage;
+export default withAuth(SearchPage);

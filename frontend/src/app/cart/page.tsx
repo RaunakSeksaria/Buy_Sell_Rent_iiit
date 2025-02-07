@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Navbar from '@/components/Navbar';
+import withAuth from '@/components/withAuth';
 
 const fetchCartItems = async () => {
   try {
@@ -149,4 +150,4 @@ const CartPage: React.FC = () => {
   );
 };
 
-export default CartPage;
+export default withAuth(CartPage);

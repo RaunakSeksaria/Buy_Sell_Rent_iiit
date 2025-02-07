@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Navbar from '@/components/Navbar';
+import withAuth from '@/components/withAuth';
 
 const fetchItemData = async (id: string) => {
   try {
@@ -127,4 +128,4 @@ const ItemPage: React.FC = () => {
   );
 };
 
-export default ItemPage;
+export default withAuth(ItemPage);
