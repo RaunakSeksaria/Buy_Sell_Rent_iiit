@@ -64,7 +64,7 @@ const SearchPage: React.FC = () => {
     const params = new URLSearchParams();
     if (filters.query) params.append('q', filters.query);
     if (filters.categories.length > 0) {
-      filters.categories.forEach(category => params.append('categories', category));
+      params.append('categories', filters.categories.join(','));
     }
     if (filters.minPrice && !isNaN(Number(filters.minPrice)) && Number(filters.minPrice) >= 0) {
       params.append('minPrice', filters.minPrice);

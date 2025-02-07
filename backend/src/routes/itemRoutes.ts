@@ -90,11 +90,11 @@ router.get('/search', async (req: Request, res: Response) => {
     }
 
     const items = await Item.find(query).populate('userId', 'firstName lastName email') as IItem[];
-    console.log(items);
-    // Log the seller names
-    items.forEach(item => {
-      console.log(`Seller Name: ${item.userId.firstName} ${item.userId.lastName}, Seller Email: ${item.userId.email}`);
-    });
+    // console.log(items);
+    // // Log the seller names
+    // items.forEach(item => {
+    //   console.log(`Seller Name: ${item.userId.firstName} ${item.userId.lastName}, Seller Email: ${item.userId.email}`);
+    // });
 
     res.status(200).json({ 
       success: true,
