@@ -118,22 +118,29 @@ const submitOrder = async (cartItems: any[], setCartItems: React.Dispatch<React.
       body: JSON.stringify(orderPayload),
     });
 
-    const responseText = await res.text();
-    console.log('Server response:', responseText);
-
+    const data = await res.json();
+    
     if (!res.ok) {
-      let errorMessage;
-      try {
-        const errorData = JSON.parse(responseText);
-        errorMessage = errorData.error || 'Failed to submit order';
-      } catch {
-        errorMessage = responseText || 'Unknown error occurred';
-      }
-      throw new Error(errorMessage);
+      throw new Error(data.error || 'Failed to submit order');
     }
 
-    const data = JSON.parse(responseText);
     console.log('Order submitted successfully:', data);
+    alert(`Your OTP for this order is: ${data.otp}\nPlease save this OTP to complete the order.`);
+
+    // Remove all items from the cart
+    const removeRes = await fetch('http://localhost:5000/api/users/allcart', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!removeRes.ok) {
+      throw new Error('Failed to clear cart items');
+    }
+
+    console.log('Cart items cleared successfully');
     setCartItems([]);
     setError(null);
   } catch (error) {

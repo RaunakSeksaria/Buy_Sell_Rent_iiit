@@ -89,7 +89,12 @@ router.post('/', authMiddleware, async (req, res) => {
       }
     }
 
-    res.status(201).json({ message: 'Order created successfully', order: newOrder });
+    // Send unhashed OTP (transactionId) to frontend
+    res.status(201).json({ 
+      message: 'Order created successfully', 
+      orderId: newOrder._id,
+      otp: transactionId  // Send the unhashed OTP
+    });
   } catch (error) {
     console.error('Order creation error:', error);
     if (error instanceof Error && error.name === 'ValidationError') {
@@ -114,6 +119,93 @@ router.get('/', authMiddleware, async (req, res) => {
     res.json(orders);
   } catch (error) {
     res.status(400).json({ error: 'Error fetching orders' });
+  }
+});
+
+// Verify OTP and complete order
+router.post('/verify-otp', authMiddleware, async (req, res) => {
+  try {
+    const sellerId = (req as any).userId;
+    const { orderId, otp } = req.body;
+
+    if (!orderId || !otp) {
+      return res.status(400).json({ error: 'Order ID and OTP are required' });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Verify seller
+    if (order.seller.toString() !== sellerId) {
+      return res.status(403).json({ error: 'Unauthorized: Not the seller of this order' });
+    }
+
+    // Verify order status
+    if (order.status !== 'pending') {
+      return res.status(400).json({ error: 'Order is not in pending state' });
+    }
+
+    // Verify OTP
+    const isValidOTP = await bcrypt.compare(otp, order.hashedOTP);
+    if (!isValidOTP) {
+      return res.status(400).json({ error: 'Invalid OTP provided' });
+    }
+
+    // Complete the order
+    order.status = 'completed';
+    await order.save();
+
+    res.json({ 
+      message: 'Order completed successfully',
+      orderId: order._id
+    });
+  } catch (error) {
+    console.error('OTP verification error:', error);
+    res.status(400).json({ 
+      error: 'Error verifying OTP',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Regenerate OTP for an order
+router.post('/regenerate-otp', authMiddleware, async (req, res) => {
+  try {
+    const buyerId = (req as any).userId;
+    const { orderId } = req.body;
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    // Verify buyer
+    if (order.buyer.toString() !== buyerId) {
+      return res.status(403).json({ error: 'Unauthorized: Not the buyer of this order' });
+    }
+
+    // Verify order status
+    if (order.status !== 'pending') {
+      return res.status(400).json({ error: 'Cannot regenerate OTP for non-pending orders' });
+    }
+
+    // Generate new OTP
+    const newTransactionId = uuidv4();
+    const newHashedOTP = await bcrypt.hash(newTransactionId, 10);
+
+    // Update order with new OTP
+    order.hashedOTP = newHashedOTP;
+    await order.save();
+
+    res.json({ 
+      message: 'OTP regenerated successfully',
+      otp: newTransactionId  // Send unhashed OTP
+    });
+  } catch (error) {
+    console.error('OTP regeneration error:', error);
+    res.status(400).json({ error: 'Error regenerating OTP' });
   }
 });
 

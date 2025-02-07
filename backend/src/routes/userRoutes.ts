@@ -203,4 +203,25 @@ router.delete('/cart', authMiddleware, async (req, res) => {
   }
 });
 
+router.delete('/allcart', authMiddleware, async (req, res) => {
+  try {
+    const userId = (req as any).userId; // Access userId set by middleware
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Manually clear all items from the cart using a for loop
+    for (let i = user.itemsInCart.length - 1; i >= 0; i--) {
+      user.itemsInCart.splice(i, 1);
+    }
+
+    await user.save();
+    res.status(200).json({ message: 'All items removed from cart' });
+  } catch (error) {
+    res.status(400).json({ error: 'Error removing items from cart' });
+  }
+});
+
 export default router;
