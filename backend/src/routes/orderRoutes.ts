@@ -11,6 +11,11 @@ const router = express.Router();
 // Create a new order
 router.post('/', authMiddleware, async (req, res) => {
   try {
+
+    const generateOTP = (): string => {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    };
+
     console.log('Received order request:', req.body);
     const userId = (req as any).userId; // Access userId set by middleware
     const { items } = req.body;
@@ -53,7 +58,8 @@ router.post('/', authMiddleware, async (req, res) => {
 
     // Create a new order
     const transactionId = uuidv4();
-    const hashedOTP = await bcrypt.hash(transactionId, 10); // Example of hashing the transaction ID as OTP
+    const unhashedOTP = generateOTP();
+    const hashedOTP = await bcrypt.hash(unhashedOTP, 10); // Example of hashing the transaction ID as OTP
 
     const newOrder = new Order({
       transactionId,
@@ -95,7 +101,7 @@ router.post('/', authMiddleware, async (req, res) => {
     res.status(201).json({ 
       message: 'Order created successfully', 
       orderId: newOrder._id,
-      otp: transactionId  // Send the unhashed OTP
+      otp: unhashedOTP  // Send the unhashed OTP
     });
   } catch (error) {
     console.error('Order creation error:', error);
