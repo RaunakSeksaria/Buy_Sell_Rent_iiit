@@ -5,6 +5,29 @@ import Head from 'next/head';
 import Navbar from '@/components/Navbar';
 import withAuth from '@/components/withAuth';
 
+const fetchUserProfile = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:5000/api/users/profile', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch profile');
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    throw error;
+  }
+};
+
 const fetchOrders = async () => {
   try {
     const token = localStorage.getItem('token'); // Get token from localStorage
@@ -83,19 +106,28 @@ const OrdersPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('pending');
   const [otpInputs, setOtpInputs] = useState<{ [key: string]: string }>({});
   const [regenerating, setRegenerating] = useState<{ [key: string]: boolean }>({});
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
-    setLoading(true);
-    fetchOrders()
-      .then((data) => {
-        setOrders(data);
+    const initializePage = async () => {
+      try {
+        setLoading(true);
+        // Fetch user profile first to get userId
+        const userProfile = await fetchUserProfile();
+        setUserId(userProfile._id);
+        
+        // Then fetch orders
+        const ordersData = await fetchOrders();
+        setOrders(ordersData);
+      } catch (error) {
+        console.error('Error initializing page:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load data');
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching orders:', error);
-        setError(error.message);
-        setLoading(false);
-      });
+      }
+    };
+
+    initializePage();
   }, []);
 
   const handleVerifyOTP = async (orderId: string) => {
@@ -151,38 +183,17 @@ const OrdersPage: React.FC = () => {
         {/* Add OTP controls for pending orders */}
         {order.status === 'pending' && (
           <div className="mt-4 space-y-2">
-            {/* Show OTP input and verify button for sellers */}
-            {order.seller._id === localStorage.getItem('userId') && (
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={otpInputs[order._id] || ''}
-                  onChange={(e) => setOtpInputs(prev => ({
-                    ...prev,
-                    [order._id]: e.target.value
-                  }))}
-                  placeholder="Enter OTP"
-                  className="px-2 py-1 rounded text-black"
-                />
-                <button
-                  onClick={() => handleVerifyOTP(order._id)}
-                  className="bg-[var(--dracula-green)] text-white px-4 py-1 rounded"
-                >
-                  Verify OTP
-                </button>
-              </div>
-            )}
+
+          {order.buyer._id === userId && (
+            <button
+              onClick={() => handleRegenerateOTP(order._id)}
+              disabled={regenerating[order._id]}
+              className="bg-[var(--dracula-purple)] text-white px-4 py-1 rounded"
+            >
+              {regenerating[order._id] ? 'Regenerating...' : 'Regenerate OTP'}
+            </button>
+          )}
             
-            {/* Show regenerate OTP button for buyers */}
-            {(
-              <button
-                onClick={() => handleRegenerateOTP(order._id)}
-                disabled={regenerating[order._id]}
-                className="bg-[var(--dracula-purple)] text-white px-4 py-1 rounded"
-              >
-                {regenerating[order._id] ? 'Regenerating...' : 'Regenerate OTP'}
-              </button>
-            )}
           </div>
         )}
       </div>
@@ -223,9 +234,9 @@ const OrdersPage: React.FC = () => {
               Sold Items
             </button>
           </div>
-          {activeTab === 'pending' && renderOrders((order) => order.status === 'pending')}
-          {activeTab === 'bought' && renderOrders((order) => order.status === 'completed')}
-          {activeTab === 'sold' && renderOrders((order) => order.status === 'completed')}
+          {activeTab === 'pending' && renderOrders((order) => (order.status === 'pending'))}
+          {activeTab === 'bought' && renderOrders((order) => (order.status === 'completed' && order.buyer._id === userId))}
+          {activeTab === 'sold' && renderOrders((order) => (order.status === 'completed' && order.seller._id === userId))}
         </div>
       </div>
     </>
