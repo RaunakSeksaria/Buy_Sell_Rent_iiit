@@ -23,7 +23,15 @@ const ItemSchema: Schema = new Schema({
   description: { type: String, required: true, trim: true },
   price: { type: Number, required: true, min: 0 },
   category: { type: String, required: true, trim: true },
-  quantity: { type: Number, required: true, min: 1 }, // Add quantity field to schema
+  quantity: {
+    type: Number,
+    required: true,
+    min: [0, 'Quantity cannot be negative'],
+    validate: {
+      validator: Number.isInteger,
+      message: '{VALUE} is not an integer value'
+    }
+  }, // Add quantity field to schema
 }, {
   timestamps: true,
 });

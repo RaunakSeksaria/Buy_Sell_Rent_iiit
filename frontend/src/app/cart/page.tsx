@@ -99,33 +99,46 @@ const removeCartItem = async (itemId: string, setCartItems: React.Dispatch<React
 
 const submitOrder = async (cartItems: any[], setCartItems: React.Dispatch<React.SetStateAction<any[]>>, setError: React.Dispatch<React.SetStateAction<string | null>>) => {
   try {
-    const token = localStorage.getItem('token'); // Get token from localStorage
-    const res = await fetch('http://localhost:5000/api/users/orders', {
+    const token = localStorage.getItem('token');
+    const orderPayload = {
+      items: cartItems.map(cartItem => ({
+        item: cartItem.item._id,
+        quantity: cartItem.quantity
+      }))
+    };
+    
+    console.log('Submitting order with payload:', orderPayload);
+    
+    const res = await fetch('http://localhost:5000/api/orders', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // Send token in Authorization header
+        'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ items: cartItems }),
+      body: JSON.stringify(orderPayload),
     });
 
+    const responseText = await res.text();
+    console.log('Server response:', responseText);
+
     if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.error || 'Failed to submit order');
+      let errorMessage;
+      try {
+        const errorData = JSON.parse(responseText);
+        errorMessage = errorData.error || 'Failed to submit order';
+      } catch {
+        errorMessage = responseText || 'Unknown error occurred';
+      }
+      throw new Error(errorMessage);
     }
 
-    const data = await res.json();
+    const data = JSON.parse(responseText);
     console.log('Order submitted successfully:', data);
-    // Clear cart items after successful order submission
     setCartItems([]);
-    setError(null); // Clear any previous error
+    setError(null);
   } catch (error) {
     console.error('Error submitting order:', error);
-    if (error instanceof Error) {
-      setError(error.message);
-    } else {
-      setError('An unknown error occurred');
-    }
+    setError(error instanceof Error ? error.message : 'An unknown error occurred');
   }
 };
 
