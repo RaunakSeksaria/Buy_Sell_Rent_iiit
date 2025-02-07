@@ -28,7 +28,7 @@ const fetchCartItems = async () => {
   }
 };
 
-const updateCartItemQuantity = async (itemId: string, quantity: number) => {
+const updateCartItemQuantity = async (itemId: string, quantity: number, setCartItems: React.Dispatch<React.SetStateAction<any[]>>, setError: React.Dispatch<React.SetStateAction<string | null>>) => {
   try {
     const token = localStorage.getItem('token'); // Get token from localStorage
     const res = await fetch('http://localhost:5000/api/users/cart', {
@@ -41,19 +41,29 @@ const updateCartItemQuantity = async (itemId: string, quantity: number) => {
     });
 
     if (!res.ok) {
-      throw new Error('Failed to update item quantity');
+      const errorData = await res.json();
+      throw new Error(errorData.error || 'Failed to update item quantity');
     }
 
     const data = await res.json();
     console.log('Item quantity updated successfully:', data);
-    alert('Item quantity updated successfully');
+
+    // Update the cart items state
+    setCartItems(prevItems => prevItems.map(item => 
+      item.item._id === itemId ? { ...item, quantity } : item
+    ));
+    setError(null); // Clear any previous error
   } catch (error) {
     console.error('Error updating item quantity:', error);
-    alert('Error updating item quantity');
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError('An unknown error occurred');
+    }
   }
 };
 
-const removeCartItem = async (itemId: string) => {
+const removeCartItem = async (itemId: string, setCartItems: React.Dispatch<React.SetStateAction<any[]>>, setError: React.Dispatch<React.SetStateAction<string | null>>) => {
   try {
     const token = localStorage.getItem('token'); // Get token from localStorage
     const res = await fetch('http://localhost:5000/api/users/cart', {
@@ -66,15 +76,23 @@ const removeCartItem = async (itemId: string) => {
     });
 
     if (!res.ok) {
-      throw new Error('Failed to remove item from cart');
+      const errorData = await res.json();
+      throw new Error(errorData.error || 'Failed to remove item from cart');
     }
 
     const data = await res.json();
     console.log('Item removed from cart successfully:', data);
-    alert('Item removed from cart successfully');
+
+    // Update the cart items state
+    setCartItems(prevItems => prevItems.filter(item => item.item._id !== itemId));
+    setError(null); // Clear any previous error
   } catch (error) {
     console.error('Error removing item from cart:', error);
-    alert('Error removing item from cart');
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError('An unknown error occurred');
+    }
   }
 };
 
@@ -101,10 +119,6 @@ const CartPage: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   return (
     <>
       <Head>
@@ -114,6 +128,7 @@ const CartPage: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
         <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-96">
           <h1 className="text-2xl font-bold text-center mb-4">Your Cart</h1>
+          {error && <div className="text-red-500 text-center mb-4">{error}</div>}
           {cartItems.length > 0 ? (
             <ul>
               {cartItems.map((cartItem) => (
@@ -127,11 +142,11 @@ const CartPage: React.FC = () => {
                       <input
                         type="number"
                         value={cartItem.quantity}
-                        onChange={(e) => updateCartItemQuantity(cartItem.item._id, parseInt(e.target.value))}
+                        onChange={(e) => updateCartItemQuantity(cartItem.item._id, parseInt(e.target.value), setCartItems, setError)}
                         className="w-16 px-2 py-1 rounded bg-[var(--dracula-foreground)] text-black mr-2"
                       />
                       <button
-                        onClick={() => removeCartItem(cartItem.item._id)}
+                        onClick={() => removeCartItem(cartItem.item._id, setCartItems, setError)}
                         className="py-1 px-2 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
                       >
                         Remove

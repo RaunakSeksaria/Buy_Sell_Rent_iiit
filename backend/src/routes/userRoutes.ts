@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import authMiddleware from '../middleware/authMiddleware';
+import Item from '../models/Item';
 
 const router = express.Router();
 
@@ -121,48 +122,64 @@ router.get('/cart', authMiddleware, async (req, res) => {
   }
 });
 
-// // Update item quantity in cart (protected route)
-// router.put('/cart', authMiddleware, async (req, res) => {
-//   try {
-//     const userId = (req as any).userId; // Access userId set by middleware
-//     const { itemId, quantity } = req.body;
+// Update item quantity in cart (protected route)
+router.put('/cart', authMiddleware, async (req, res) => {
+  try {
+    const userId = (req as any).userId; // Access userId set by middleware
+    const { itemId, quantity } = req.body;
 
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-//     const itemIndex = user.itemsInCart.findIndex((cartItem) => cartItem.item && cartItem.item.toString() === itemId);
-//     if (itemIndex > -1) {
-//       // Update item quantity
-//       user.itemsInCart[itemIndex].quantity = quantity;
-//       await user.save();
-//       res.status(200).json({ message: 'Item quantity updated' });
-//     } else {
-//       res.status(404).json({ error: 'Item not found in cart' });
-//     }
-//   } catch (error) {
-//     res.status(400).json({ error: 'Error updating item quantity in cart' });
-//   }
-// });
+    const itemIndex = user.itemsInCart.findIndex((cartItem) => cartItem.item && cartItem.item.toString() === itemId);
+    if (itemIndex > -1) {
+      const item = await Item.findById(itemId);
+      if (!item) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
 
-// Remove item from cart (protected route)
-// router.delete('/cart', authMiddleware, async (req, res) => {
-//   try {
-//     const userId = (req as any).userId; // Access userId set by middleware
-//     const { itemId } = req.body;
+      // Check if the updated quantity is less than the actual quantity in the items collection
+      if (quantity <= item.quantity) {
+        // Update item quantity
+        user.itemsInCart[itemIndex].quantity = quantity;
+        await user.save();
+        res.status(200).json({ message: 'Item quantity updated' });
+      } else {
+        res.status(400).json({ error: 'Updated quantity must be less than the available quantity' });
+      }
+    } else {
+      res.status(404).json({ error: 'Item not found in cart' });
+    }
+  } catch (error) {
+    res.status(400).json({ error: 'Error updating item quantity in cart' });
+  }
+});
 
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
 
-//     user.itemsInCart.set(user.itemsInCart.filter((cartItem) => cartItem.item && cartItem.item.toString() !== itemId));
-//     await user.save();
-//     res.status(200).json({ message: 'Item removed from cart' });
-//   } catch (error) {
-//     res.status(400).json({ error: 'Error removing item from cart' });
-//   }
-// });
+// Delete item from cart (protected route)
+router.delete('/cart', authMiddleware, async (req, res) => {
+  try {
+    const userId = (req as any).userId; // Access userId set by middleware
+    const { itemId } = req.body;
 
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const itemIndex = user.itemsInCart.findIndex((cartItem) => cartItem.item && cartItem.item.toString() === itemId);
+    if (itemIndex > -1) {
+      // Remove item from cart
+      user.itemsInCart.splice(itemIndex, 1);
+      await user.save();
+      res.status(200).json({ message: 'Item removed from cart' });
+    } else {
+      res.status(404).json({ error: 'Item not found in cart' });
+    }
+  } catch (error) {
+    res.status(400).json({ error: 'Error removing item from cart' });
+  }
+});
 export default router;
