@@ -88,133 +88,131 @@ const SearchPage: React.FC = () => {
     setFilters({ ...filters, categories: selectedCategories });
   };
 
-  return (
-    <>
-      <Navbar />
-      <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
-        {/* <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-full max-w-5xl"> */}
-          {/* <h1 className="text-2xl font-bold text-center mb-4">Search Items</h1> */}
-          <form onSubmit={handleSearch}>
-            <div className="mb-4">
-              <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="query">
-                Search Query
+  return (<>
+    <Navbar />
+    <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
+      {/* <div className="bg-[var(--dracula-current-line)] p-8 rounded-lg shadow-lg w-full max-w-5xl"> */}
+        {/* <h1 className="text-2xl font-bold text-center mb-4">Search Items</h1> */}
+        <form onSubmit={handleSearch}>
+          <div className="mb-4">
+            <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="query">
+              Search Query
+            </label>
+            <input
+              type="text"
+              id="query"
+              value={filters.query}
+              onChange={(e) => setFilters({...filters, query: e.target.value})}
+              className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="categories">
+              Categories
+            </label>
+            <select
+              id="categories"
+              multiple
+              value={filters.categories}
+              onChange={handleCategoryChange}
+              className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
+            >
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="minPrice">
+                Min Price
               </label>
               <input
-                type="text"
-                id="query"
-                value={filters.query}
-                onChange={(e) => setFilters({...filters, query: e.target.value})}
+                type="number"
+                id="minPrice"
+                value={filters.minPrice}
+                onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
                 className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
               />
             </div>
-
-            <div className="mb-4">
-              <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="categories">
-                Categories
+            <div>
+              <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="maxPrice">
+                Max Price
               </label>
-              <select
-                id="categories"
-                multiple
-                value={filters.categories}
-                onChange={handleCategoryChange}
+              <input
+                type="number"
+                id="maxPrice"
+                value={filters.maxPrice}
+                onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
                 className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
-              >
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="minPrice">
-                  Min Price
-                </label>
-                <input
-                  type="number"
-                  id="minPrice"
-                  value={filters.minPrice}
-                  onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
-                  className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
-                />
-              </div>
-              <div>
-                <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="maxPrice">
-                  Max Price
-                </label>
-                <input
-                  type="number"
-                  id="maxPrice"
-                  value={filters.maxPrice}
-                  onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
-                  className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="minQuantity">
-                  Min Quantity
-                </label>
-                <input
-                  type="number"
-                  id="minQuantity"
-                  value={filters.minQuantity}
-                  onChange={(e) => setFilters({...filters, minQuantity: e.target.value})}
-                  className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
-                />
-              </div>
-              <div>
-                <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="maxQuantity">
-                  Max Quantity
-                </label>
-                <input
-                  type="number"
-                  id="maxQuantity"
-                  value={filters.maxQuantity}
-                  onChange={(e) => setFilters({...filters, maxQuantity: e.target.value})}
-                  className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-2 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
-            >
-              Search
-            </button>
-          </form>
-
-          <div className="mt-4">
-            {results.length > 0 ? (
-              <ul>
-                {results.map((item) => (
-                  <li key={item._id} className="mb-2">
-                    <Link href={`/item?id=${item._id}`}>
-                      <div className="bg-[var(--dracula-selection)] p-2 rounded cursor-pointer">
-                        <h2 className="text-lg font-bold">{item.itemName}</h2>
-                        <p>{item.description}</p>
-                        <p className="text-sm text-[var(--dracula-comment)]">Rs.{item.price}</p>
-                        <p className="text-sm text-[var(--dracula-comment)]">Category: {item.category}</p>
-                        <p className="text-sm text-[var(--dracula-comment)]">Quantity: {item.quantity}</p>
-                        <p className="text-sm text-[var(--dracula-comment)]">Seller: {item.userId.firstName} {item.userId.lastName}</p>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-[var(--dracula-comment)]">No results found</p>
-            )}
           </div>
-        {/* </div> */}
-      </div>
-    </>
-  );
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="minQuantity">
+                Min Quantity
+              </label>
+              <input
+                type="number"
+                id="minQuantity"
+                value={filters.minQuantity}
+                onChange={(e) => setFilters({...filters, minQuantity: e.target.value})}
+                className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
+              />
+            </div>
+            <div>
+              <label className="block text-[var(--dracula-comment)] mb-2" htmlFor="maxQuantity">
+                Max Quantity
+              </label>
+              <input
+                type="number"
+                id="maxQuantity"
+                value={filters.maxQuantity}
+                onChange={(e) => setFilters({...filters, maxQuantity: e.target.value})}
+                className="w-full px-3 py-2 rounded bg-[var(--dracula-foreground)] text-black"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-2 bg-[var(--dracula-purple)] text-white rounded hover:bg-[var(--dracula-pink)] transition-colors"
+          >
+            Search
+          </button>
+        </form>
+
+        <div className="mt-4">
+          {results.length > 0 ? (
+            <ul>
+              {results.map((item) => (
+                <li key={item._id} className="mb-2">
+                  <Link href={`/item?id=${item._id}`} legacyBehavior>
+                    <div className="bg-[var(--dracula-selection)] p-2 rounded cursor-pointer">
+                      <h2 className="text-lg font-bold">{item.itemName}</h2>
+                      <p>{item.description}</p>
+                      <p className="text-sm text-[var(--dracula-comment)]">Rs.{item.price}</p>
+                      <p className="text-sm text-[var(--dracula-comment)]">Category: {item.category}</p>
+                      <p className="text-sm text-[var(--dracula-comment)]">Quantity: {item.quantity}</p>
+                      <p className="text-sm text-[var(--dracula-comment)]">Seller: {item.userId.firstName} {item.userId.lastName}</p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-[var(--dracula-comment)]">No results found</p>
+          )}
+        </div>
+      {/* </div> */}
+    </div>
+  </>);
 };
 
 export default withAuth(SearchPage);

@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-[var(--dracula-current-line)] p-4 shadow-lg">
+    (<nav className="bg-[var(--dracula-current-line)] p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-[var(--dracula-foreground)] text-2xl font-bold">
           BSR@IIITH
@@ -27,19 +27,19 @@ const Navbar: React.FC = () => {
         <div className="space-x-4">
           {isLoggedIn ? (
             <>
-              <Link href="/profile" passHref>
+              <Link href="/profile" passHref legacyBehavior>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Profile</span>
               </Link>
-              <Link href="/search" passHref>
+              <Link href="/search" passHref legacyBehavior>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Search</span>
               </Link>
-              <Link href="/orders" passHref>
+              <Link href="/orders" passHref legacyBehavior>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Orders</span>
               </Link>
-              <Link href="/cart" passHref>
+              <Link href="/cart" passHref legacyBehavior>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Cart</span>
               </Link>
-              <Link href="/sell" passHref>
+              <Link href="/sell" passHref legacyBehavior>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Sell</span>
               </Link>
               <button onClick={handleLogout} className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">
@@ -48,20 +48,20 @@ const Navbar: React.FC = () => {
             </>
           ) : (
             <>
-              <Link href="/" passHref>
+              <Link href="/" passHref legacyBehavior>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Home</span>
               </Link>
-              <Link href="/signup" passHref>
+              <Link href="/signup" passHref legacyBehavior>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Sign Up</span>
               </Link>
-              <Link href="/login" passHref>
+              <Link href="/login" passHref legacyBehavior>
                 <span className="text-[var(--dracula-foreground)] hover:text-[var(--dracula-pink)] transition-colors cursor-pointer">Login</span>
               </Link>
             </>
           )}
         </div>
       </div>
-    </nav>
+    </nav>)
   );
 };
 
