@@ -132,10 +132,10 @@ const DeliverItemsPage: React.FC = () => {
                 <div key={order._id} className="bg-[var(--dracula-selection)] p-4 rounded">
                   <h2 className="text-lg font-bold">Order ID: {order.transactionId}</h2>
                   <p className="text-[var(--dracula-comment)]">
-                    Buyer: {order.buyerDetails.firstName} {order.buyerDetails.lastName}
+                    Buyer: {order.buyer.firstName} {order.buyer.lastName}
                   </p>
                   <p className="text-[var(--dracula-comment)]">
-                    Email: {order.buyerDetails.email}
+                    Email: {order.buyer.email}
                   </p>
                   <div className="mt-2">
                     <h3 className="font-bold">Items:</h3>
