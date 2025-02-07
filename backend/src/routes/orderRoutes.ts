@@ -63,11 +63,13 @@ router.post('/', authMiddleware, async (req, res) => {
       amount: totalAmount,
       hashedOTP,
       buyerDetails: {
+        _id: buyer._id,
         firstName: buyer.firstName,
         lastName: buyer.lastName,
         email: buyer.email,
       },
       sellerDetails: {
+        _id: itemDetails[0].item.userId._id,
         firstName: itemDetails[0].item.userId.firstName,
         lastName: itemDetails[0].item.userId.lastName,
         email: itemDetails[0].item.userId.email,
@@ -115,7 +117,7 @@ router.get('/', authMiddleware, async (req, res) => {
   try {
     const userId = (req as any).userId; // Access userId set by middleware
 
-    const orders = await Order.find({ buyer: userId }).populate('seller', 'firstName lastName').populate('buyer', 'firstName lastName').populate('items.item');
+    const orders = await Order.find({ buyer: userId }).populate('seller', 'firstName lastName _id').populate('buyer', 'firstName lastName _id').populate('items.item');
     res.json(orders);
   } catch (error) {
     res.status(400).json({ error: 'Error fetching orders' });

@@ -6,31 +6,57 @@ import Navbar from '@/components/Navbar';
 import withAuth from '@/components/withAuth';
 
 const fetchPendingOrders = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:5000/api/orders', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+    try {
+      const token = localStorage.getItem('token');
+      // First get the user profile to get userId
+      const userRes = await fetch('http://localhost:5000/api/users/profile', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch pending orders');
+      if (!userRes.ok) {
+        throw new Error('Failed to fetch user profile');
+      }
+
+      const userData = await userRes.json();
+      const userId = userData._id;
+      console.log(userId);
+      const res = await fetch('http://localhost:5000/api/orders', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+  
+      if (!res.ok) {
+        throw new Error('Failed to fetch pending orders');
+      }
+  
+      const data = await res.json();
+      console.log('All orders:', data);
+  
+      // Filter only pending orders where current user is the seller
+      const filteredOrders = data.filter((order: any) => {
+        console.log('Checking order:', {
+          orderId: order._id,
+          status: order.status,
+          sellerId: order.seller._id,
+          matches: order.status === 'pending' && order.seller._id === userId
+        });
+        return order.status === 'pending' && order.seller._id === userId;
+      });
+  
+      console.log('Filtered orders:', filteredOrders);
+      return filteredOrders;
+    } catch (error) {
+      console.error('Error fetching pending orders:', error);
+      throw error;
     }
-
-    const data = await res.json();
-    // Filter only pending orders where current user is the seller
-    return data.filter((order: any) => 
-      order.status === 'pending' && 
-      order.seller._id === localStorage.getItem('userId')
-    );
-  } catch (error) {
-    console.error('Error fetching pending orders:', error);
-    throw error;
-  }
-};
+  };
 
 const DeliverItemsPage: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
